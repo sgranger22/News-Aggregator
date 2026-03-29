@@ -123,10 +123,13 @@ section[data-testid="stSidebar"] div[data-testid="stButton"] > button[kind="prim
 FEEDS_FILE = "saved_feeds.json"
 
 def github_persistence_enabled():
-    return all(
-        key in st.secrets
-        for key in ["GITHUB_TOKEN", "GITHUB_OWNER", "GITHUB_REPO", "GITHUB_FEEDS_PATH"]
-    )
+    try:
+        return all(
+            key in st.secrets
+            for key in ["GITHUB_TOKEN", "GITHUB_OWNER", "GITHUB_REPO", "GITHUB_FEEDS_PATH"]
+        )
+    except Exception:
+        return False
 
 def load_feeds():
     if github_persistence_enabled():
@@ -319,6 +322,7 @@ if st.sidebar.button("Save Feed"):
 st.sidebar.header("Filters")
 keyword = st.sidebar.text_input("Filter by keyword or phrase")
 match_mode = st.sidebar.radio("Match mode", ["Exact word", "Contains text"], index=0)
+article_limit = st.sidebar.slider("Articles per source", 5, 50, 20)
 
 st.sidebar.header("Summary Options")
 use_ai = st.sidebar.checkbox("Use AI summaries")
@@ -346,7 +350,7 @@ if st.button("Fetch News"):
                 if feed_title not in articles_by_source:
                     articles_by_source[feed_title] = []
 
-                for entry in parsed_feed.entries[:10]:
+                for entry in parsed_feed.entries[:article_limit]:
                     title = entry.get("title", "")
                     raw_summary = clean_text(entry.get("summary", ""))
 
