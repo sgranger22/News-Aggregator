@@ -301,10 +301,12 @@ for i, feed in enumerate(all_feeds):
 
 st.sidebar.header("Add New RSS Feed")
 
-new_feed_name = st.sidebar.text_input("Feed name (e.g. Wired)")
-new_feed_url = st.sidebar.text_input("Feed URL")
+with st.sidebar.form("add_feed_form", clear_on_submit=True):
+    new_feed_name = st.text_input("Feed name (e.g. Wired)")
+    new_feed_url = st.text_input("Feed URL")
+    save_feed_clicked = st.form_submit_button("Save Feed")
 
-if st.sidebar.button("Save Feed"):
+if save_feed_clicked:
     if not new_feed_name or not new_feed_url:
         st.sidebar.warning("Please enter both a feed name and a feed URL.")
     else:
@@ -318,7 +320,7 @@ if st.sidebar.button("Save Feed"):
             save_feeds(all_feeds)
             st.sidebar.success("Feed saved.")
             st.rerun()
-
+            
 st.sidebar.header("Filters")
 keyword = st.sidebar.text_input("Filter by keyword or phrase")
 match_mode = st.sidebar.radio("Match mode", ["Exact word", "Contains text"], index=0)
